@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 import requests
 import json
+import sys
 
 class Coin():
     valid_timeframes = ['24h', '7d', '30d', '1y', '5y']
@@ -23,16 +24,14 @@ class Coin():
                 self.timeframe = timeframe
                 self.base = base
                 self.coin_name = coin_name
-                self.coin_url = generate_coin_url()
+                self.coin_url = self.generate_coin_url()
                 self.data = self.get_historic_prices()
                 self.price_matrix = self.get_price_matrix(30)
                 self.normalized_prices = self.normalize_prices(self.price_matrix)
             except Exception as e:
-                print("ERROR:: " + str(e))
-                return -1
+                print("Exception Initializing Coin:: " + str(e))
         else:
             print('Invalid Argument(s) Detected.')
-        return 0
 
     def generate_coin_url(self):
         '''
@@ -61,7 +60,7 @@ class Coin():
             df['price'] = pd.to_numeric(df['price'])
             df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms').dt.date
         except Exception as e:
-            print(str(e))
+            print("Exception Getting Historic Prices:: "+str(e))
             return -1
         return df.groupby('timestamp').mean()
 
@@ -74,13 +73,13 @@ class Coin():
         try:
             price_matrix = []
             price_data = self.data['price']
-            print(str(range(len(price_data)-seq_len+1)))
+            #print(str(range(len(price_data)-seq_len+1)))
             for index in range(len(price_data)-seq_len+1):
-                print(f'adding {data[index:index+seq_len]}')
+                print(f'adding {self.data[index:index+seq_len]}')
                 price_matrix.append(price_data[index:index+seq_len])
             return price_matrix
         except Exception as e:
-            print("Exception:: " + str(e))
+            print("Exception Getting Price Matrix:: " + str(e))
 
     def update_coin_ids(self):
         '''
@@ -95,7 +94,7 @@ class Coin():
                 self.coin_id[str(ele['symbol'])] = ele['id']
             return 0
         except Exception as e:
-            print("Error: " + str(e))
+            print("Exception Updating Coin IDs: " + str(e))
             return -1
 
     def set_timeframe(self, new_tf):
@@ -124,7 +123,7 @@ class Coin():
             self.price_matrix = self.get_price_matrix(30)
             self.normalized_prices = self.normalize_prices(self.price_matrix)
         except Exception as e:
-            print("ERROR: "+str(e))
+            print("Exception Reloading Data:: "+str(e))
             return -1
         return 0
 
@@ -143,7 +142,7 @@ class Coin():
                 normalized_data.append(normalized_window)
             return normalized_data
         except Exception as e:
-            print("Exception:: " +str(e))
+            print("Exception Normalizing Prices:: " +str(e))
             return -1
 
 
@@ -169,16 +168,16 @@ class Coin():
             else:
                 return X_train, y_train, X_test, y_test
         except Exception as e:
-            print("Exception: " + str(e))
+            print("Exception Splitting Train and Test Data: " + str(e))
             return -1
 
-    def is_valid_coin(coin):
+    def is_valid_coin(self, coin):
         '''
             Returns True if the provided string is one of the keys in self.coin_id
         '''
         return True if coin in self.coin_id.keys() else False
 
-    def is_valid_timeframe(tf):
+    def is_valid_timeframe(self, tf):
         '''
             Returns True if the provided string is present in the list self.valid_timeframes
         '''
@@ -186,6 +185,25 @@ class Coin():
 
 
 
+
+
+def main():
+    if len(sys.argv) != 4:
+        print('Incorrect arguments provided.')
+        print('Format is:: python <script_name.py> <coin_abbrv> <timeframe> <base_currency>')
+        print('  Example:: python coin.py BTC 30d USD')
+        return -1
+    else:
+        new_coin = Coin(sys.argv[1], sys.argv[2], sys.argv[3])
+        print(str(new_coin.get_stats()))
+    return 0
+
+
+
+
+
+if __name__ == '__main__':
+    main()
 
 
 
