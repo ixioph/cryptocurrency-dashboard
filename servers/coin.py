@@ -49,6 +49,13 @@ class Coin():
                     'price_matrix': self.get_price_matrix, 'normalized_prices': self.normalized_prices}
         return statz
 
+    def get_dataframe(self):
+        '''
+            Returns a pandas dataframe with available historical data and any requested indicators
+        '''
+        # TODO: add indicators as columns to dataframe
+        return self.data
+
     def get_historic_prices(self):
         '''
             GETs historic price data for the given coin from the CoinRanking.com API
@@ -175,6 +182,9 @@ class Coin():
         '''
             Returns True if the provided string is one of the keys in self.coin_id
         '''
+        # judging by coinranking's coin list, coins can be 2-5 characters in length
+        # all upper-case, Alphabetical. Some coins include an asterisk (*)
+        # TODO: regex that checks that input matches the above description
         return True if coin in self.coin_id.keys() else False
 
     def is_valid_timeframe(self, tf):
