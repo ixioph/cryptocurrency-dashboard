@@ -14,7 +14,7 @@ def predict():
     '''
         API takes a coin_id or coin_name and returns a prediction for the next day's price.
     '''
-    return jsonify({'coin_id': 1337, 'coin_name': 'BTC',
+    return jsonify({'coin_id': 1, 'coin_name': 'BTC',
                     'current_price': 1234.56, 'tomorrows_prediction': 2345.67})
 
 
@@ -22,9 +22,17 @@ def predict():
 ####################           LAUNCH           ####################
 ####################################################################
 
-if __name__ == '__main__':
-    #app.run(host="0.0.0.0",port=PORT, debug=DEBUG)
+
+
+
+
+def main():
     app.run(port=1337, debug=True)
+
+
+
+if __name__ == '__main__':
+    main()
 
 
 

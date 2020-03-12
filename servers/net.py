@@ -7,6 +7,8 @@ import torch.nn.functional as F
 import torch.nn as nn
 import torch
 
+# TODO: 
+
 class Net(nn.Module):
     batch_size = 2
     epochs = 15
